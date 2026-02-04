@@ -7,6 +7,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
 
 // Contact route
 app.post("/contact", async (req, res) => {
@@ -17,12 +20,15 @@ app.post("/contact", async (req, res) => {
   }
 
   const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
 
 
   try {
@@ -41,7 +47,8 @@ Message: ${message}
     res.json({ success: true });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, error: error.message });
+
   }
 });
 
